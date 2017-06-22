@@ -34,7 +34,7 @@ def my_form_post():
 
 
 
-    return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=latlonReq["results"][0], timezone=jsonResponse["timezone"])
+    return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=latlonReq["results"][0], timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"])
 
 
 
