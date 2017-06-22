@@ -256,8 +256,8 @@
 			<figcaption id="tempCaption"></figcaption>
 			<script type="text/javascript">
 				var b = "{{timezone|safe}}"
-				var a = moment.tz(arr[0], b);
-				console.log(a);
+				//var a = moment.tz(arr[0], b);
+				//console.log(a);
 				var time = new Date(arr[0].time*1000).toLocaleTimeString();
 				var temperature = Math.round({{hourlyarr.0.temperature}});
 				var des = {{hourlyarr|safe}}
@@ -718,4 +718,41 @@
 		icons.play();
 		</script>
 	</div>
+
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th>#</th>
+	      <th>First Name</th>
+	      <th>Last Name</th>
+	      <th>Username</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <tr>
+	      <th scope="row">1</th>
+	      <td>
+	      	<canvas class="icons2" id="testIcon" width="42" height="42"></canvas>
+	      	<script type="text/javascript">
+			var icons = new Skycons({"color": "black"});
+			icons.set("testIcon",Skycons.FOG);
+			</script>
+	      </td>
+	      <td>Otto</td>
+	      <td>@mdo</td>
+	    </tr>
+	    <tr>
+	      <th scope="row">2</th>
+	      <td>Jacob</td>
+	      <td>Thornton</td>
+	      <td>@fat</td>
+	    </tr>
+	    <tr>
+	      <th scope="row">3</th>
+	      <td>Larry</td>
+	      <td>the Bird</td>
+	      <td>@twitter</td>
+	    </tr>
+	  </tbody>
+	</table>
 {% endblock %}
