@@ -1,0 +1,721 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<script type="text/javascript">
+	var cs = {{cityState|safe}};
+	
+	console.log(cs.address_components[0].long_name);
+	console.log(cs.address_components[3].short_name);
+	document.getElementById("srch-term").value=cs.address_components[0].long_name+","+cs.address_components[3].short_name;
+</script>
+<div>
+	<div class="ex" style="text-align: center;">
+		<div class="ex2">
+			<span class="varDetails">Wind:  {{data.windSpeed}} mph</span>
+			<span class="varDetails">Pressure:  {{data.pressure}} mb</span>
+			<span class="varDetails">Visibility:  {{data.visibility}} km</span>
+			<span class="varDetails">Humidity:  {{data.humidity}} %</span>	
+		</div>	
+	</div>
+
+	<div class="divMid">
+		<figure class="icons">
+			<canvas class="icons2" id="weatherIcon" width="64" height="64"></canvas>
+		</figure>
+		<span class="tempLine" id="temperature">intvalue°</span>
+		<span class="tempLine">{{data.summary}}</span>
+		<script type="text/javascript">
+			$('#temperature').html(Math.round({{data.temperature}})+"°");
+		</script>
+		<div >
+			<span class="hourlyText">Next Hour:  {{mintuely}}</span>
+		</div>
+	</div>
+	<style type="text/css">
+	.nav-pills > li {
+    float:none;
+    display:inline-block;
+    zoom:1;
+}
+
+.nav-pills {
+    text-align:center;
+}
+	.nav{
+		color:#FFF !important;
+	}
+
+	.nav-pills>li>a {
+	    background-color: #000 !important;
+	    color: #000;
+	}
+	.nav-pills > li > a:hover{
+  		background-color: #FFFFFF !important;
+    	border: medium none;
+    	border-radius: 0;
+    	color:#000 !important;
+}
+	.nav-pills > .active > a, .nav-pills > .active > a:hover {
+    background-color: white !important;
+    color: black !important;
+    /*border-style: solid; 
+*/}
+	</style>
+	<div id="exTab1" class="container">	
+		<ul  class="nav nav-pills" style="display: inline-block; text-align: center; ">
+			<li class="active">
+        	<a href="#1a" data-toggle="tab" style="color: #FFFFFF">24 Hour Temperature</a>
+			</li>
+			<li><a href="#2a" data-toggle="tab" style="color: #FFFFFF">24 Hour Precip %</a>
+			</li>
+			<li><a href="#3a" data-toggle="tab" style="color: #FFFFFF">24 Hour Humidity %</a>
+			</li>
+		</ul>
+
+			<div class="tab-content clearfix" style="width: auto; text-align: center;">
+			  <div class="tab-pane active" id="1a">
+          			<div style="width: 1140px; height: 400px;">
+					<canvas id="hourLineChart" height="300" width="800" class="icons2" style="padding: 0; margin: auto; display: block;">
+						<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+						<script type="text/javascript">
+							var ctx = $("#hourLineChart");
+							var arr={{hourlyarr|safe}};
+							var timeArr=[];
+							var tempArr=[];
+							var arr2={{hourlyarr|safe}}
+							for (var i = 0; i < 25; i++) {
+								var temp = new Date(arr[i].time*1000).toLocaleTimeString();
+								//var temp2 = new Date(arr[i].time*1000).getMinutes();
+								timeArr[i]=temp
+								
+								tempArr[i]=arr[i].temperature
+
+							}
+							var myChart = new Chart(ctx, {
+							    type: 'line',
+							    data: {
+							        labels: timeArr,
+							        datasets: [{
+							            label: '°F',
+							            data: tempArr,
+							            backgroundColor: [
+							                'rgba(255, 99, 132, 0.2)',
+							                'rgba(54, 162, 235, 0.2)',
+							                'rgba(255, 206, 86, 0.2)',
+							                'rgba(75, 192, 192, 0.2)',
+							                'rgba(153, 102, 255, 0.2)',
+							                'rgba(255, 159, 64, 0.2)'
+							            ],
+							            borderColor: [
+							                'rgba(255,99,132,1)',
+							                'rgba(54, 162, 235, 1)',
+							                'rgba(255, 206, 86, 1)',
+							                'rgba(75, 192, 192, 1)',
+							                'rgba(153, 102, 255, 1)',
+							                'rgba(255, 159, 64, 1)'
+							            ],
+							            borderWidth: 1
+							        }]
+							    },
+							    options: {
+							    	legend: {
+			            				display: false
+			         				},
+							        scales: {
+							            yAxes: [{
+							                ticks: {
+							                    beginAtZero:false
+							                }
+							            }]
+							        }
+							    }
+							});
+						</script>
+					</canvas>
+				</div>
+				</div>
+				<div class="tab-pane" id="2a">
+         			<div style="width: 1140px; height: 400px; marker-end: 10px">
+					<canvas id="hourPrecipProbLineChart" height="300" width="800" class="icons2">
+						<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+						<script type="text/javascript">
+							var ctx = $("#hourPrecipProbLineChart");
+							var arr={{hourlyarr|safe}};
+							var timeArr=[];
+							var tempArr=[];
+							var arr2={{hourlyarr|safe}}
+							for (var i = 0; i < 25; i++) {
+								var temp = new Date(arr[i].time*1000).toLocaleTimeString();
+								//var temp2 = new Date(arr[i].time*1000).getMinutes();
+								timeArr[i]=temp
+								
+								tempArr[i]=arr[i].precipProbability*100
+
+							}
+							var myChart = new Chart(ctx, {
+							    type: 'line',
+							    data: {
+							        labels: timeArr,
+							        datasets: [{
+							            label: '%',
+							            data: tempArr,
+							            backgroundColor: [
+							                'rgba(0,0,255, 0.2)'
+							                
+							            ],
+							            borderColor: [
+							                'rgba(0,0,255, 0.2)'
+							            ],
+							            borderWidth: 1
+							        }]
+							    },
+							    options: {
+							    	legend: {
+			            				display: false
+			         				},
+							        scales: {
+							            yAxes: [{
+							                ticks: {
+							                    beginAtZero:false
+							                }
+							            }]
+							        }
+							    }
+							});
+						</script>
+					</canvas>
+				</div>
+				</div>
+        <div class="tab-pane" id="3a">
+          	<div style="width: 1140px; height: 400px;">
+				<canvas id="hourHumidityLineChart" height="300" width="800" class="icons2">
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+					<script type="text/javascript">
+						var ctx = $("#hourHumidityLineChart");
+						var arr={{hourlyarr|safe}};
+						var timeArr=[];
+						var tempArr=[];
+						var arr2={{hourlyarr|safe}}
+						for (var i = 0; i < 25; i++) {
+							var temp = new Date(arr[i].time*1000).toLocaleTimeString();
+							//var temp2 = new Date(arr[i].time*1000).getMinutes();
+							timeArr[i]=temp
+							
+							tempArr[i]=arr[i].humidity
+
+						}
+						var myChart = new Chart(ctx, {
+						    type: 'line',
+						    data: {
+						        labels: timeArr,
+						        datasets: [{
+						            label: '%',
+						            data: tempArr,
+						            backgroundColor: [
+						                'rgba(169,169,169, 0.4)'
+						                
+						            ],
+						            borderColor: [
+						                'rgba(169,169,169, 0.4)'
+						            ],
+						            borderWidth: 1
+						        }]
+						    },
+						    options: {
+						    	legend: {
+		            				display: false
+		         				},
+						        scales: {
+						            yAxes: [{
+						                ticks: {
+						                    beginAtZero:false
+						                }
+						            }]
+						        }
+						    }
+						});
+					</script>
+				</canvas>
+			</div>
+				</div>
+       
+			</div>
+  </div>
+
+  <div class="ex" style="text-align: center; background-color: white" >
+		<div class="ex2" style="font-weight: 600; font-size: 32px; margin-top: 30px; margin-bottom: 30px; padding-bottom: 30px;">
+			<span>&darr; Next 12 Hours &darr;</span>
+		</div>
+		</div>
+	<script type="text/javascrpit" src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone.min.js"></script>
+  <div id="12_hour_icons" style="height: 200px; width:100%; text-align: center; margin-top: 40px; position: relative;">
+  	<div class="ex2" style="display: inline-block; left: 0;" >
+  		<figure class="icons">
+			<canvas class="icons2" id="hour1_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption"></figcaption>
+			<figcaption id="tempCaption"></figcaption>
+			<script type="text/javascript">
+				var b = "{{timezone|safe}}"
+				var a = moment.tz(arr[0], b);
+				console.log(a);
+				var time = new Date(arr[0].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.0.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption").text(temperature+"° "+des[0].summary);
+				$("#tempCaption").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[0].icon==="clear-night"){icons.set("hour1_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[0].icon==='clear-day'){icons.set("hour1_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[0].icon === 'partly-cloudly-day'){icons.set("hour1_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[0].icon === 'partly-cloudly-night'){icons.set("hour1_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[0].icon === 'cloudy'){icons.set("hour1_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[0].icon === 'rain'){icons.set("hour1_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[0].icon === 'sleet'){icons.set("hour1_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[0].icon === 'wind'){icons.set("hour1_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[0].icon === 'snow'){icons.set("hour1_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour1_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour2_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption2"></figcaption>
+			<figcaption id="tempCaption2"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[1].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.1.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption2").text(temperature+"° "+des[1].summary);
+				$("#tempCaption2").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[1].icon==="clear-night"){icons.set("hour2_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[1].icon==='clear-day'){icons.set("hour2_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[1].icon === 'partly-cloudly-day'){icons.set("hour2_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[1].icon === 'partly-cloudly-night'){icons.set("hour2_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[1].icon === 'cloudy'){icons.set("hour2_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[1].icon === 'rain'){icons.set("hour2_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[1].icon === 'sleet'){icons.set("hour2_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[1].icon === 'wind'){icons.set("hour2_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[1].icon === 'snow'){icons.set("hour2_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour2_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour3_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption3"></figcaption>
+			<figcaption id="tempCaption3"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[2].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.2.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption3").text(temperature+"° "+des[2].summary);
+				$("#tempCaption3").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[2].icon==="clear-night"){icons.set("hour3_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[2].icon==='clear-day'){icons.set("hour3_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[2].icon === 'partly-cloudly-day'){icons.set("hour3_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[2].icon === 'partly-cloudly-night'){icons.set("hour3_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[2].icon === 'cloudy'){icons.set("hour3_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[2].icon === 'rain'){icons.set("hour3_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[2].icon === 'sleet'){icons.set("hour3_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[2].icon === 'wind'){icons.set("hour3_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[2].icon === 'snow'){icons.set("hour3_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour3_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour4_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption4"></figcaption>
+			<figcaption id="tempCaption4"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[3].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.3.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption4").text(temperature+"° "+des[3].summary);
+				$("#tempCaption4").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[3].icon==="clear-night"){icons.set("hour4_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[3].icon==='clear-day'){icons.set("hour4_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[3].icon === 'partly-cloudly-day'){icons.set("hour4_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[3].icon === 'partly-cloudly-night'){icons.set("hour4_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[3].icon === 'cloudy'){icons.set("hour4_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[3].icon === 'rain'){icons.set("hour4_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[3].icon === 'sleet'){icons.set("hour4_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[3].icon === 'wind'){icons.set("hour4_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[3].icon === 'snow'){icons.set("hour4_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour4_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour5_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption5"></figcaption>
+			<figcaption id="tempCaption5"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[4].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.4.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption5").text(temperature+"° "+des[4].summary);
+				$("#tempCaption5").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[4].icon==="clear-night"){icons.set("hour5_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[4].icon==='clear-day'){icons.set("hour5_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[4].icon === 'partly-cloudly-day'){icons.set("hour5_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[4].icon === 'partly-cloudly-night'){icons.set("hour5_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[4].icon === 'cloudy'){icons.set("hour5_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[4].icon === 'rain'){icons.set("hour5_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[4].icon === 'sleet'){icons.set("hour5_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[4].icon === 'wind'){icons.set("hour5_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[4].icon === 'snow'){icons.set("hour5_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour5_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour6_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption6"></figcaption>
+			<figcaption id="tempCaption6"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[5].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.5.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption6").text(temperature+"° "+des[5].summary);
+				$("#tempCaption6").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[5].icon==="clear-night"){icons.set("hour6_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[5].icon==='clear-day'){icons.set("hour6_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[5].icon === 'partly-cloudly-day'){icons.set("hour6_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[5].icon === 'partly-cloudly-night'){icons.set("hour6_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[5].icon === 'cloudy'){icons.set("hour6_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[5].icon === 'rain'){icons.set("hour6_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[5].icon === 'sleet'){icons.set("hour6_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[5].icon === 'wind'){icons.set("hour6_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[5].icon === 'snow'){icons.set("hour6_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour6_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour7_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption7"></figcaption>
+			<figcaption id="tempCaption7"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[6].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.6.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption7").text(temperature+"° "+des[6].summary);
+				$("#tempCaption7").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[6].icon==="clear-night"){icons.set("hour7_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[6].icon==='clear-day'){icons.set("hour7_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[6].icon === 'partly-cloudly-day'){icons.set("hour7_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[6].icon === 'partly-cloudly-night'){icons.set("hour7_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[6].icon === 'cloudy'){icons.set("hour7_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[6].icon === 'rain'){icons.set("hour7_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[6].icon === 'sleet'){icons.set("hour7_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[6].icon === 'wind'){icons.set("hour7_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[6].icon === 'snow'){icons.set("hour7_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour7_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour8_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption8"></figcaption>
+			<figcaption id="tempCaption8"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[7].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.7.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption8").text(temperature+"° "+des[7].summary);
+				$("#tempCaption8").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[7].icon==="clear-night"){icons.set("hour8_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[7].icon==='clear-day'){icons.set("hour8_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[7].icon === 'partly-cloudly-day'){icons.set("hour8_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[7].icon === 'partly-cloudly-night'){icons.set("hour8_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[7].icon === 'cloudy'){icons.set("hour8_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[7].icon === 'rain'){icons.set("hour8_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[7].icon === 'sleet'){icons.set("hour8_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[7].icon === 'wind'){icons.set("hour8_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[7].icon === 'snow'){icons.set("hour8_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour8_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour9_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption9"></figcaption>
+			<figcaption id="tempCaption9"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[8].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.8.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption9").text(temperature+"° "+des[8].summary);
+				$("#tempCaption9").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[8].icon==="clear-night"){icons.set("hour9_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[8].icon==='clear-day'){icons.set("hour9_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[8].icon === 'partly-cloudly-day'){icons.set("hour9_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[8].icon === 'partly-cloudly-night'){icons.set("hour9_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[8].icon === 'cloudy'){icons.set("hour9_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[8].icon === 'rain'){icons.set("hour9_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[8].icon === 'sleet'){icons.set("hour9_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[8].icon === 'wind'){icons.set("hour9_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[8].icon === 'snow'){icons.set("hour9_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour9_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour10_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption10"></figcaption>
+			<figcaption id="tempCaption10"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[9].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.9.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption10").text(temperature+"° "+des[9].summary);
+				$("#tempCaption10").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[9].icon==="clear-night"){icons.set("hour10_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[9].icon==='clear-day'){icons.set("hour10_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[9].icon === 'partly-cloudly-day'){icons.set("hour10_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[9].icon === 'partly-cloudly-night'){icons.set("hour10_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[9].icon === 'cloudy'){icons.set("hour10_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[9].icon === 'rain'){icons.set("hour10_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[9].icon === 'sleet'){icons.set("hour10_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[9].icon === 'wind'){icons.set("hour10_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[9].icon === 'snow'){icons.set("hour10_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour10_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour11_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption11"></figcaption>
+			<figcaption id="tempCaption11"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[10].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.10.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption11").text(temperature+"° "+des[10].summary);
+				$("#tempCaption11").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[10].icon==="clear-night"){icons.set("hour11_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[10].icon==='clear-day'){icons.set("hour11_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[10].icon === 'partly-cloudly-day'){icons.set("hour11_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[10].icon === 'partly-cloudly-night'){icons.set("hour11_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[10].icon === 'cloudy'){icons.set("hour11_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[10].icon === 'rain'){icons.set("hour11_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[10].icon === 'sleet'){icons.set("hour11_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[10].icon === 'wind'){icons.set("hour11_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[10].icon === 'snow'){icons.set("hour11_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour11_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour12_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption12"></figcaption>
+			<figcaption id="tempCaption12"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[11].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.11.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption12").text(temperature+"° "+des[11].summary);
+				$("#tempCaption12").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[11].icon==="clear-night"){icons.set("hour12_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[11].icon==='clear-day'){icons.set("hour12_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[11].icon === 'partly-cloudly-day'){icons.set("hour12_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[11].icon === 'partly-cloudly-night'){icons.set("hour12_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[11].icon === 'cloudy'){icons.set("hour12_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[11].icon === 'rain'){icons.set("hour12_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[11].icon === 'sleet'){icons.set("hour12_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[11].icon === 'wind'){icons.set("hour12_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[11].icon === 'snow'){icons.set("hour12_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour12_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<div class="ex2" style="display: inline-block;">
+  		<figure class="icons">
+			<canvas class="icons2" id="hour13_weatherIcon" width="42" height="42"></canvas>
+			<figcaption id="tempanddecCaption13"></figcaption>
+			<figcaption id="tempCaption13"></figcaption>
+			<script type="text/javascript">
+				var time = new Date(arr[12].time*1000).toLocaleTimeString();
+				var temperature = Math.round({{hourlyarr.12.temperature}});
+				var des = {{hourlyarr|safe}}
+				$("#tempanddecCaption13").text(temperature+"° "+des[12].summary);
+				$("#tempCaption13").text(time);
+			</script>
+			
+		</figure>
+  		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "orange"});
+		var hourlyArr={{hourlyarr|safe}}
+		
+		if(hourlyArr[12].icon==="clear-night"){icons.set("hour13_weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(hourlyArr[12].icon==='clear-day'){icons.set("hour13_weatherIcon", Skycons.CLEAR_DAY);}
+		else if(hourlyArr[12].icon === 'partly-cloudly-day'){icons.set("hour13_weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(hourlyArr[12].icon === 'partly-cloudly-night'){icons.set("hour13_weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(hourlyArr[12].icon === 'cloudy'){icons.set("hour13_weatherIcon", Skycons.CLOUDY);}
+		else if(hourlyArr[12].icon === 'rain'){icons.set("hour13_weatherIcon", Skycons.RAIN);}
+		else if(hourlyArr[12].icon === 'sleet'){icons.set("hour13_weatherIcon", Skycons.SLEET);}
+		else if(hourlyArr[12].icon === 'wind'){icons.set("hour13_weatherIcon", Skycons.WIND);}
+		else if(hourlyArr[12].icon === 'snow'){icons.set("hour13_weatherIcon", Skycons.SNOW);}
+		else{icons.set("hour13_weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+		
+  	</div>
+  	<hr>
+
+  </div>
+	<div class="jumbotron" >
+	    <h1 align="center">Skycast Prototype</h1>
+	    <p position="absolute">{{data.summary}}</p>    
+	</div>
+		<div class="title">
+			
+			{{data.summary}}
+			{{data.icon}}
+			{{data.temperature}}
+			{{data.apparentTemperature}}
+			{{data.humidity}}
+			{{data.windSpeed}}
+			{{data.windGust}}
+
+		</div>
+		<p id="icon" hidden>{{data.icon}}</p>
+		
+		<script src="https://rawgithub.com/darkskyapp/skycons/master/skycons.js"></script>
+		<script type="text/javascript">
+		var icons = new Skycons({"color": "black"});
+		var test=document.getElementById("icon").textContent;
+		if(test==="clear-night"){icons.set("weatherIcon", Skycons.CLEAR_NIGHT);}
+		else if(test==='clear-day'){icons.set("weatherIcon", Skycons.CLEAR_DAY);}
+		else if(test === 'partly-cloudly-day'){icons.set("weatherIcon", Skycons.PARTLY_CLOUDLY_DAY);}
+		else if(test === 'partly-cloudly-night'){icons.set("weatherIcon", Skycons.PARTLY_CLOUDLY_NIGHT);}
+		else if(test === 'cloudy'){icons.set("weatherIcon", Skycons.CLOUDY);}
+		else if(test === 'rain'){icons.set("weatherIcon", Skycons.RAIN);}
+		else if(test === 'sleet'){icons.set("weatherIcon", Skycons.SLEET);}
+		else if(test === 'wind'){icons.set("weatherIcon", Skycons.WIND);}
+		else if(test === 'snow'){icons.set("weatherIcon", Skycons.SNOW);}
+		else{icons.set("weatherIcon",Skycons.FOG);}
+		icons.play();
+		</script>
+	</div>
+{% endblock %}

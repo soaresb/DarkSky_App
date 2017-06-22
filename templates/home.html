@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+	
+    <h1>Enter some text</h1>
+    <h2>(it will be converted to uppercase)</h2>
+    <form class="navbar-form" action="." method="POST" style=">
+        <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text">
+        <div class="input-group-btn" style="display: inline-block;">
+        	<button class="btn btn-default" type="submit" name="my-form"><i class="glyphicon glyphicon-search"></i>
+        	</button>
+      	</div>
+    </form>
+    
+
+    <iframe
+  	width="600"
+  	height="450"
+  	frameborder="0" style="border:0"
+  	src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc
+    	&q=Space+Needle,Seattle+WA" allowfullscreen>
+	</iframe>
+
+{% endblock %}
