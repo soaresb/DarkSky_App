@@ -28,13 +28,14 @@ def hello():
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(latitude)+','+str(longitude))
     jsonResponse = weatherrequest.json()
     cityNameTemp=response.json()
+    cityNameTemp2=response.text
     for i in cityNameTemp['results'][0]['address_components']:
         if i['types'][0] == 'administrative_area_level_3':
             cityName = i['long_name']
         if(i['types'][0] == 'administrative_area_level_1'):
             cityState2 = i['short_name']
     
-    return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=cityState2, timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"])
+    return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=cityState2, timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], iptest=cityNameTemp2)
 
 @app.route('/', methods=['POST'])
 def my_form_post():	
@@ -53,10 +54,14 @@ def my_form_post():
 
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(newLat)+','+str(newLon))
     jsonResponse = weatherrequest.json()
+    for i in latlonReq['results'][0]['address_components']:
+        if i['types'][0] == 'administrative_area_level_3':
+            cityName = i['long_name']
+        if(i['types'][0] == 'administrative_area_level_1'):
+            cityState2 = i['short_name']
 
 
-
-    return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=latlonReq["results"][0], timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"])
+    return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=cityState2, timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], iptest=cityNameTemp)
 
 
 
