@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import googlemaps
+import json
 app = Flask(__name__)
 gmaps = googlemaps.Client(key='AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc')
 geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
@@ -9,15 +10,36 @@ geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
 
 @app.route("/")
 def hello():
-    return render_template('home.html')
+    send_url = 'http://freegeoip.net/json'
+    r = requests.get(send_url)
+    j = json.loads(r.text)
+    latitude = j['latitude']
+    longitude = j['longitude']
+    sensor = 'true'
+
+    base = "http://maps.googleapis.com/maps/api/geocode/json?"
+    params = "latlng={lat},{lon}&sensor={sen}".format(
+        lat=latitude,
+        lon=longitude,
+        sen=sensor
+    )
+    url = "{base}{params}".format(base=base, params=params)
+    response = requests.get(url)
+    weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(latitude)+','+str(longitude))
+    jsonResponse = weatherrequest.json()
+    cityNameTemp=response.json()
+    for i in cityNameTemp['results'][0]['address_components']:
+        if i['types'][0] == 'administrative_area_level_3':
+            cityName = i['long_name']
+        if(i['types'][0] == 'administrative_area_level_1'):
+            cityState2 = i['short_name']
+    
+    return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=cityState2, timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"])
 
 @app.route('/', methods=['POST'])
 def my_form_post():	
-    #city = request.form['City']
+    
     state = request.form['srch-term']
-    #37.8267,-122.4233
-    #cs=city+","+state
-    #search bar
     #add day and location to weather page
     #sync timezone from api request
     #different background color

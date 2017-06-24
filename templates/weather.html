@@ -2,11 +2,8 @@
 
 {% block body %}
 <script type="text/javascript">
-	var cs = {{cityState|safe}};
 	
-	console.log(cs.address_components[0].long_name);
-	console.log(cs.address_components[3].short_name);
-	document.getElementById("srch-term").value=cs.address_components[0].long_name+","+cs.address_components[3].short_name;
+	document.getElementById("srch-term").value= "{{city}}"+","+"{{cityState}}";
 </script>
 <div>
 	<div class="ex" style="text-align: center;">
@@ -123,6 +120,10 @@
 			         				},
 							        scales: {
 							            yAxes: [{
+							            	scaleLabel:{
+						            		display: true,
+						            		labelString: "Temperature °F"
+						            		},
 							                ticks: {
 							                    beginAtZero:false
 							                }
@@ -175,6 +176,10 @@
 			         				},
 							        scales: {
 							            yAxes: [{
+							            	scaleLabel:{
+						            			display: true,
+						            			labelString: "Precip Percentage"
+						            		},
 							                ticks: {
 							                    beginAtZero:false
 							                }
@@ -201,7 +206,7 @@
 							//var temp2 = new Date(arr[i].time*1000).getMinutes();
 							timeArr[i]=temp
 							
-							tempArr[i]=arr[i].humidity
+							tempArr[i]=arr[i].humidity*100
 
 						}
 						var myChart = new Chart(ctx, {
@@ -227,6 +232,10 @@
 		         				},
 						        scales: {
 						            yAxes: [{
+						            	scaleLabel:{
+						            		display: true,
+						            		labelString: "Fog Percentage"
+						            	},
 						                ticks: {
 						                    beginAtZero:false
 						                }
