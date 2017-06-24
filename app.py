@@ -15,7 +15,7 @@ def hello():
     j = json.loads(r.text)
     latitude = j['latitude']
     longitude = j['longitude']
-    sensor = 'true'
+    sensor = 'false'
 
     base = "http://maps.googleapis.com/maps/api/geocode/json?"
     params = "latlng={lat},{lon}&sensor={sen}".format(
