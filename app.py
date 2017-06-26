@@ -21,7 +21,7 @@ def hello():
 @app.route('/weather/<latitude>/<longitude>', methods=['POST','GET'])
 def my_form_post(latitude,longitude):	
     if request.method=='GET':
-        
+        cityName=''
         lat=latitude
         lon = longitude
         weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(lat)+','+str(lon))
@@ -30,13 +30,13 @@ def my_form_post(latitude,longitude):
         latlonReq=latlonReq.json()
 
         for i in latlonReq["results"][0]['address_components']:
-            if i['types'][0] == 'administrative_area_level_3':
+            if i['types'][0] == 'administrative_area_level_2':
                 cityName = i['long_name']
             if(i['types'][0] == 'administrative_area_level_1'):
                 cityState2 = i['short_name']
         history["/weather/"+str(lat)+'/'+str(lon)]="/weather/"+str(lat)+'/'+str(lon)
-        cache.set('my-item',"/weather/"+str(lat)+'/'+str(lon),timeout=5 * 60)
-        return render_template('weather.html', data=jsonResponse["currently"], hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"],  timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], latitude=jsonResponse["latitude"],longitude=jsonResponse['longitude'],city=cityName,cityState=cityState2, cache=cache)
+        
+        return render_template('weather.html', data=jsonResponse["currently"], hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"],  timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], latitude=jsonResponse["latitude"],longitude=jsonResponse['longitude'],city=cityName,cityState=cityState2)
 
     state = request.form['srch-term']
     print(state)
