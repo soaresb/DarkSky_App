@@ -83,7 +83,7 @@ def my_timemachine_post(latitude,longitude,time):
         return render_template('timemachine.html', hourly=jsonResponse["hourly"], time=time, hourlyarr=jsonResponse["hourly"]["data"], daily=jsonResponse["daily"], latitude=lat, longitude=lon, city=cityNamee, cityState=cityState2)
 
     date = request.form['date']
-    # longitude = request.form['longitude']
+    
     lat = latitude
     lon = longitude
     
