@@ -7,22 +7,18 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Skycast Prototype</a>
+          <a class="navbar-brand" href="/">Skycast Prototype</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
-            
-              <li><a href="/about">About</a></li>
-            
-            <li><a href="/contact">Contact</a></li>
-
+            <li><a href="/history">History</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 <div style="display:  inline-block; text-align: center; width: 100%; background-color: rgba(238, 238, 238, 0.35);">
-<form class="navbar-form" action="." method="POST" >
+<form class="navbar-form" action="{{ url_for('my_form_post', latitude=latitude, longitude=longitude) }}" method="POST" >
         <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text" style="width: 80%">
         <div class="input-group-btn" style="display: inline-block;">
           <button class="btn btn-default" type="submit" name="my-form"><i class="glyphicon glyphicon-search"></i>

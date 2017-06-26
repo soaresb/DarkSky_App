@@ -7,40 +7,35 @@ app = Flask(__name__)
 gmaps = googlemaps.Client(key='AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc')
 geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
 #google api key AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc
-
+history={}
 
 @app.route("/")
 def hello():
-    # send_url = 'http://freegeoip.net/json'
-    # r = requests.get(send_url)
-    # j = json.loads(r.text)
-    # latitude = j['latitude']
-    # longitude = j['longitude']
-    # sensor = 'false'
-
-    # base = "http://maps.googleapis.com/maps/api/geocode/json?"
-    # params = "latlng={lat},{lon}&sensor={sen}".format(
-    #     lat=latitude,
-    #     lon=longitude,
-    #     sen=sensor
-    # )
-    # url = "{base}{params}".format(base=base, params=params)
-    # response = requests.get(url)
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/40.730610,-73.935242')
     jsonResponse = weatherrequest.json()
-    # cityNameTemp=response.json()
-    # cityNameTemp2=response.text
-    # for i in cityNameTemp['results'][0]['address_components']:
-    #     if i['types'][0] == 'administrative_area_level_3':
-    #         cityName = i['long_name']
-    #     if(i['types'][0] == 'administrative_area_level_1'):
-    #         cityState2 = i['short_name']
     
     return render_template('weather.html', data=jsonResponse["currently"], city='New York', hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState='NY', timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"],latitude=jsonResponse["latitude"],longitude=jsonResponse['longitude'])
 
-@app.route('/', methods=['POST'])
-def my_form_post():	
-    
+@app.route('/weather/<latitude>/<longitude>', methods=['POST','GET'])
+def my_form_post(latitude,longitude):	
+    if request.method=='GET':
+        
+        lat=latitude
+        lon = longitude
+        weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(lat)+','+str(lon))
+        jsonResponse = weatherrequest.json()
+        latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+','+lon+"&sensor=true&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
+        latlonReq=latlonReq.json()
+
+        for i in latlonReq["results"][0]['address_components']:
+            if i['types'][0] == 'administrative_area_level_3':
+                cityName = i['long_name']
+            if(i['types'][0] == 'administrative_area_level_1'):
+                cityState2 = i['short_name']
+        history["/weather/"+str(lat)+'/'+str(lon)]="/weather/"+str(lat)+'/'+str(lon)
+
+        return render_template('weather.html', data=jsonResponse["currently"], hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"],  timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], latitude=jsonResponse["latitude"],longitude=jsonResponse['longitude'],city=cityName,cityState=cityState2)
+
     state = request.form['srch-term']
     #add day and location to weather page
     #sync timezone from api request
@@ -52,9 +47,12 @@ def my_form_post():
     cityName=latlonReq["results"][0]["address_components"][0]["long_name"]
     newLat=latlonReq["results"][0]["geometry"]["location"]["lat"]
     newLon=latlonReq["results"][0]["geometry"]["location"]["lng"]
-
+    
+    history["/weather/"+str(newLat)+'/'+str(newLon)]="/weather/"+str(newLat)+'/'+str(newLon)
+    
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(newLat)+','+str(newLon))
     jsonResponse = weatherrequest.json()
+    cityState2=''
     for i in latlonReq['results'][0]['address_components']:
         if i['types'][0] == 'administrative_area_level_3':
             cityName = i['long_name']
@@ -64,8 +62,26 @@ def my_form_post():
 
     return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=cityState2, timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], latitude=jsonResponse["latitude"],longitude=jsonResponse['longitude'])
 
-@app.route('/timeMachine/<latitude>/<longitude>', methods=['POST'])
-def my_timemachine_post(latitude,longitude):
+@app.route('/timeMachine/<latitude>/<longitude>/<time>', methods=['POST','GET'])
+def my_timemachine_post(latitude,longitude,time):
+    if request.method == 'GET':
+        lat=latitude
+        lon = longitude
+        time=time
+
+        weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(lat)+','+str(lon)+','+str(int(time))+"?exclude=currently")
+        jsonResponse = weatherrequest.json()
+        latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+','+lon+"&sensor=true&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
+        latlonReq=latlonReq.json()
+        cityNamee=""
+        cityState2=''
+        for i in latlonReq["results"][0]['address_components']:
+            if i['types'][0] == 'administrative_area_level_2':
+                cityNamee = i['long_name']
+            if(i['types'][0] == 'administrative_area_level_1'):
+                cityState2 = i['short_name']
+        history["/timeMachine/"+str(lat)+'/'+str(lon)+'/'+str(int(time))]="/weather/"+str(lat)+'/'+str(lon)+'/'+str(int(time))
+        return render_template('timemachine.html', hourly=jsonResponse["hourly"], time=time, hourlyarr=jsonResponse["hourly"]["data"], daily=jsonResponse["daily"], latitude=lat, longitude=lon, city=cityNamee, cityState=cityState2)
 
     date = request.form['date']
     # longitude = request.form['longitude']
@@ -75,18 +91,27 @@ def my_timemachine_post(latitude,longitude):
     datestr=list(date.split('/'))
     timeMachineDate=datetime(int(datestr[2]),int(datestr[0]),int(datestr[1])).timestamp()
 
-    #state = request.form['srch-term']
-    #latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+state+"&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
-    #latlonReq=latlonReq.json()
-    
-    # newLat=latlonReq["results"][0]["geometry"]["location"]["lat"]
-    # newLon=latlonReq["results"][0]["geometry"]["location"]["lng"]
-
+    latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+','+lon+"&sensor=true&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
+    latlonReq=latlonReq.json()
+    cityName=''
+    cityState2=''
+    for i in latlonReq["results"][0]['address_components']:
+        if i['types'][0] == 'administrative_area_level_2':
+            cityName = i['long_name']
+        if(i['types'][0] == 'administrative_area_level_1'):
+            cityState2 = i['short_name']
+    history["/timeMachine/"+str(lat)+'/'+str(lon)+'/'+str(int(timeMachineDate))]="/weather/"+str(lat)+'/'+str(lon)+'/'+str(int(timeMachineDate))
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(lat)+','+str(lon)+','+str(int(timeMachineDate))+"?exclude=currently")
     jsonResponse = weatherrequest.json()
 
-    return render_template('timemachine.html', hourly=jsonResponse["hourly"], time=timeMachineDate)
+    return render_template('timemachine.html', hourly=jsonResponse["hourly"], time=timeMachineDate, hourlyarr=jsonResponse["hourly"]["data"], daily=jsonResponse["daily"], latitude=lat , longitude=lon, city=cityName, cityState=cityState2)
 
+@app.route('/history', methods=['POST','GET'])
+def get_history():
+    l=[]
+    for key in history:
+        l.append(key)
+    return render_template('home.html',data=l)
 if __name__ == '__main__':
 	app.run(debug=True)
 

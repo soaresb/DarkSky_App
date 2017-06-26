@@ -8,7 +8,7 @@
 
 <div>
 	<div class="ex" style="text-align: center;">
-		<div class="ex2">
+		<div class="ex2" style="text-align: center; display: inline-block; width: 100%;">
 			<span class="varDetails">Wind:  {{data.windSpeed}} mph</span>
 			<span class="varDetails">Pressure:  {{data.pressure}} mb</span>
 			<span class="varDetails">Visibility:  {{data.visibility}} km</span>
@@ -67,6 +67,8 @@
 			<li><a href="#2a" data-toggle="tab" style="color: #FFFFFF">24 Hour Precip %</a>
 			</li>
 			<li><a href="#3a" data-toggle="tab" style="color: #FFFFFF">24 Hour Humidity %</a>
+			</li>
+			<li><a href="#4a" data-toggle="tab" style="color: #FFFFFF">24 Hour UV Index</a>
 			</li>
 		</ul>
 
@@ -248,12 +250,68 @@
 				</canvas>
 			</div>
 				</div>
+			<div class="tab-pane" id="4a">
+          	<div style="width: 1140px; height: 400px;">
+				<canvas id="hourUVLineChart" height="300" width="800" class="icons2">
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+					<script type="text/javascript">
+						var ctx = $("#hourUVLineChart");
+						var arr={{hourly|safe}};
+						var timeArr=[];
+						var tempArr=[];
+						var arr2={{hourlyarr|safe}}
+						for (var i = 0; i < 24; i++) {
+							var temp = new Date(arr.data[i].time*1000).toLocaleTimeString();
+							//var temp2 = new Date(arr[i].time*1000).getMinutes();
+							timeArr[i]=temp
+							
+							tempArr[i]=arr.data[i].uvIndex
+
+						}
+						var myChart = new Chart(ctx, {
+						    type: 'line',
+						    data: {
+						        labels: timeArr,
+						        datasets: [{
+						            label: 'UV Index',
+						            data: tempArr,
+						            backgroundColor: [
+						                'rgba(255,127,80, 0.5)'
+						                
+						            ],
+						            borderColor: [
+						                'rgba(255,127,80, 0.5)'
+						            ],
+						            borderWidth: 1
+						        }]
+						    },
+						    options: {
+						    	legend: {
+		            				display: false
+		         				},
+						        scales: {
+						            yAxes: [{
+						            	scaleLabel:{
+						            		display: true,
+						            		labelString: "UV Index"
+						            	},
+						                ticks: {
+						                    beginAtZero:false
+						                }
+						            }]
+						        }
+						    }
+						});
+					</script>
+				</canvas>
+			</div>
+				</div>
        
 			</div>
   </div>
 
   <div class="ex" style="text-align: center; background-color: white" >
-		<div class="ex2" style="font-weight: 600; font-size: 32px; margin-top: 30px; margin-bottom: 30px; padding-bottom: 30px;">
+		<div class="ex2" style="font-weight: 600; font-size: 32px; margin-top: 30px; margin-bottom: 30px; padding-bottom: 30px; width: 100%;">
 			<span>&darr; Next 12 Hours &darr;</span>
 		</div>
 		</div>
@@ -270,11 +328,12 @@
 			<script type="text/javascript">
 				var b = "{{timezone|safe}}";
 				var a = {{offset}};
+				var hourlyArr={{hourlyarr|safe}}
 				var options = { timeZone: "{{timezone}}"};
 				console.log(("{{timezone}}"));
-				var time = new Date(arr[0].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[0].time*1000).toLocaleTimeString(options);
 				var options2 = { timeZone: "America/New_York"};
-				var time2 = new Date(arr[0])
+				var time2 = new Date(hourlyArr[0])
 				var newD = new Date(time2 - a*60*60*1000).toLocaleTimeString();
 
 				console.log(time2);
@@ -311,7 +370,7 @@
 			<figcaption id="tempCaption2"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[1].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[1].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.1.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption2").text(temperature+"° "+des[1].summary);
@@ -345,7 +404,7 @@
 			<figcaption id="tempCaption3"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[2].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[2].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.2.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption3").text(temperature+"° "+des[2].summary);
@@ -379,7 +438,7 @@
 			<figcaption id="tempCaption4"></figcaption>
 			<script type="text/javascript">
 			var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[3].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[3].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.3.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption4").text(temperature+"° "+des[3].summary);
@@ -413,7 +472,7 @@
 			<figcaption id="tempCaption5"></figcaption>
 			<script type="text/javascript">
 			var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[4].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[4].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.4.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption5").text(temperature+"° "+des[4].summary);
@@ -447,7 +506,7 @@
 			<figcaption id="tempCaption6"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[5].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[5].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.5.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption6").text(temperature+"° "+des[5].summary);
@@ -481,7 +540,7 @@
 			<figcaption id="tempCaption7"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[6].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[6].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.6.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption7").text(temperature+"° "+des[6].summary);
@@ -515,7 +574,7 @@
 			<figcaption id="tempCaption8"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[7].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[7].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.7.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption8").text(temperature+"° "+des[7].summary);
@@ -549,7 +608,7 @@
 			<figcaption id="tempCaption9"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[8].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[8].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.8.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption9").text(temperature+"° "+des[8].summary);
@@ -583,7 +642,7 @@
 			<figcaption id="tempCaption10"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[9].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[9].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.9.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption10").text(temperature+"° "+des[9].summary);
@@ -617,7 +676,7 @@
 			<figcaption id="tempCaption11"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[10].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[10].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.10.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption11").text(temperature+"° "+des[10].summary);
@@ -651,7 +710,7 @@
 			<figcaption id="tempCaption12"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[11].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[11].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.11.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption12").text(temperature+"° "+des[11].summary);
@@ -685,7 +744,7 @@
 			<figcaption id="tempCaption13"></figcaption>
 			<script type="text/javascript">
 				var options = { timeZone: "{{timezone}}"};
-				var time = new Date(arr[12].time*1000).toLocaleTimeString(options);
+				var time = new Date(hourlyArr[12].time*1000).toLocaleTimeString(options);
 				var temperature = Math.round({{hourlyarr.12.temperature}});
 				var des = {{hourlyarr|safe}}
 				$("#tempanddecCaption13").text(temperature+"° "+des[12].summary);
@@ -1081,8 +1140,10 @@
 	    right: -15px;
 	}
 	</style>
-
-	<form id="eventForm" method="POST" class="form-horizontal" action="{{ url_for('my_timemachine_post', latitude=latitude, longitude=longitude) }}">
+	<div class="jumbotron" style="height: 200px;">
+	    <h1 align="center">&darr; Time Machine, Pick a date! &darr;</h1>
+	</div>
+	<form id="eventForm" method="POST" class="form-horizontal" action="/timeMachine/{{latitude}}/{{longitude}}">
 	    <div class="form-group">
 	        <label class="col-xs-3 control-label">Date</label>
 	        <div class="col-xs-5 date">
@@ -1103,6 +1164,11 @@
 	        })
 	        .on('changeDate', function(e) {
 	            // Revalidate the date field
+	            var x = $('#datePicker').datepicker('getDate');
+	            var numDate = new Date(x);
+	            var xx = numDate.getTime();
+	            
+	            $("#eventForm").attr("action", "/timeMachine/{{latitude}}/{{longitude}}/"+xx/1000);
 	            $("#eventForm").submit();
 	        });
 

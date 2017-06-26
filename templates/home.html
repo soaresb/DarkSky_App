@@ -1,7 +1,21 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+<div id="linkDiv" style="display: inline-block;">
 	
+</div>
+	<script type="text/javascript">
+		var mydiv = document.getElementById("linkDiv");
+		var data = {{data|safe}}
+		for(var i=0;i<data.length;i++){
+			var aTag = document.createElement('a');
+			aTag.setAttribute('href',data[i]);
+			aTag.innerHTML = data[i];
+			mydiv.appendChild(aTag);
+			var b = document.createElement('br');
+			mydiv.appendChild(b);
+	}
+	</script>
     <h1>Enter some text</h1>
     <h2>(it will be converted to uppercase)</h2>
     <form class="navbar-form" action="." method="POST" style=">
