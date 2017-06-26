@@ -18,11 +18,21 @@
       </div>
     </nav>
 <div style="display:  inline-block; text-align: center; width: 100%; background-color: rgba(238, 238, 238, 0.35);">
-<form class="navbar-form" action="{{ url_for('my_form_post', latitude=latitude, longitude=longitude) }}" method="POST" >
+<form class="navbar-form" action="" method="POST" id="navS" >
         <input class="form-control" placeholder="Search" name="srch-term" id="srch-term" type="text" style="width: 80%">
         <div class="input-group-btn" style="display: inline-block;">
-          <button class="btn btn-default" type="submit" name="my-form"><i class="glyphicon glyphicon-search"></i>
+          <button class="btn btn-default" type="submit" name="my-form" id="myB" ><i class="glyphicon glyphicon-search"></i>
+                    <script type="text/javascript">
+            $( "#navS" ).submit(function( event ) {
+              var x = document.getElementById("srch-term").value;
+              x=x.replace(/\s+/g, '');
+              x=x.replace(',', '');
+              $("#navS").attr("action", "/weather/"+x);
+            });
+              
+            </script>
           </button>
         </div>
+
     </form>
 </div>
