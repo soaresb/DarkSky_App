@@ -84,18 +84,18 @@ def my_timemachine_post(latitude,longitude,time):
         jsonResponse = weatherrequest.json()
         latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+','+lon+"&sensor=true&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
         latlonReq=latlonReq.json()
-        cityNamee=""
+        cityNamee=latlonReq["results"][0]['address_components'][4]['long_name']
         cityState2=''
         for i in latlonReq["results"][0]['address_components']:
             
             if i['types'][0] == 'administrative_area_level_3':
-                cityName = i['long_name']
+                cityNamee = i['long_name']
             if i['types'][0] == 'administrative_area_level_2':
-                cityName=i['long_name']
+                cityNamee=i['long_name']
             if(i['types'][0]=='locality'):
-                cityName=i['long_name']
+                cityNamee=i['long_name']
             if(i['types'][0]=='neighborhood'):
-                cityName=i['long_name']
+                cityNamee=i['long_name']
             if(i['types'][0] == 'administrative_area_level_1'):
                 cityState2 = i['short_name']
         #history["/timeMachine/"+str(lat)+'/'+str(lon)+'/'+str(int(time))]="/weather/"+str(lat)+'/'+str(lon)+'/'+str(int(time))
