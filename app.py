@@ -29,12 +29,18 @@ def my_form_post(latitude,longitude):
         latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+','+lon+"&sensor=true&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
         latlonReq=latlonReq.json()
 
-        for i in latlonReq["results"][0]['address_components']:
-            if i['types'][0] == 'administrative_area_level_2':
+        for i in latlonReq['results'][0]['address_components']:
+            if i['types'][0] == 'administrative_area_level_3':
                 cityName = i['long_name']
+            if i['types'][0] == 'administrative_area_level_2':
+                cityName=i['long_name']
+            if(i['types'][0]=='locality'):
+                cityName=i['long_name']
+            if(i['types'][0]=='neighborhood'):
+                cityName=i['long_name']
             if(i['types'][0] == 'administrative_area_level_1'):
                 cityState2 = i['short_name']
-        history["/weather/"+str(lat)+'/'+str(lon)]="/weather/"+str(lat)+'/'+str(lon)
+        #history["/weather/"+str(lat)+'/'+str(lon)]="/weather/"+str(lat)+'/'+str(lon)
         
         return render_template('weather.html', data=jsonResponse["currently"], hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"],  timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], latitude=jsonResponse["latitude"],longitude=jsonResponse['longitude'],city=cityName,cityState=cityState2)
 
@@ -47,7 +53,7 @@ def my_form_post(latitude,longitude):
     newLat=latlonReq["results"][0]["geometry"]["location"]["lat"]
     newLon=latlonReq["results"][0]["geometry"]["location"]["lng"]
     
-    history["/weather/"+str(newLat)+'/'+str(newLon)]="/weather/"+str(newLat)+'/'+str(newLon)
+    #history["/weather/"+str(newLat)+'/'+str(newLon)]="/weather/"+str(newLat)+'/'+str(newLon)
     
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(newLat)+','+str(newLon))
     jsonResponse = weatherrequest.json()
@@ -55,6 +61,12 @@ def my_form_post(latitude,longitude):
     for i in latlonReq['results'][0]['address_components']:
         if i['types'][0] == 'administrative_area_level_3':
             cityName = i['long_name']
+        if i['types'][0] == 'administrative_area_level_2':
+            cityName=i['long_name']
+        if(i['types'][0]=='locality'):
+            cityName=i['long_name']
+        if(i['types'][0]=='neighborhood'):
+            cityName=i['long_name']
         if(i['types'][0] == 'administrative_area_level_1'):
             cityState2 = i['short_name']
 
@@ -75,11 +87,18 @@ def my_timemachine_post(latitude,longitude,time):
         cityNamee=""
         cityState2=''
         for i in latlonReq["results"][0]['address_components']:
+            
+            if i['types'][0] == 'administrative_area_level_3':
+                cityName = i['long_name']
             if i['types'][0] == 'administrative_area_level_2':
-                cityNamee = i['long_name']
+                cityName=i['long_name']
+            if(i['types'][0]=='locality'):
+                cityName=i['long_name']
+            if(i['types'][0]=='neighborhood'):
+                cityName=i['long_name']
             if(i['types'][0] == 'administrative_area_level_1'):
                 cityState2 = i['short_name']
-        history["/timeMachine/"+str(lat)+'/'+str(lon)+'/'+str(int(time))]="/weather/"+str(lat)+'/'+str(lon)+'/'+str(int(time))
+        #history["/timeMachine/"+str(lat)+'/'+str(lon)+'/'+str(int(time))]="/weather/"+str(lat)+'/'+str(lon)+'/'+str(int(time))
         return render_template('timemachine.html', hourly=jsonResponse["hourly"], time=time, hourlyarr=jsonResponse["hourly"]["data"], daily=jsonResponse["daily"], latitude=lat, longitude=lon, city=cityNamee, cityState=cityState2)
 
     date = request.form['date']
@@ -94,12 +113,18 @@ def my_timemachine_post(latitude,longitude,time):
     latlonReq=latlonReq.json()
     cityName=''
     cityState2=''
-    for i in latlonReq["results"][0]['address_components']:
-        if i['types'][0] == 'administrative_area_level_2':
+    for i in latlonReq['results'][0]['address_components']:
+        if i['types'][0] == 'administrative_area_level_3':
             cityName = i['long_name']
+        if i['types'][0] == 'administrative_area_level_2':
+            cityName=i['long_name']
+        if(i['types'][0]=='locality'):
+            cityName=i['long_name']
+        if(i['types'][0]=='neighborhood'):
+            cityName=i['long_name']
         if(i['types'][0] == 'administrative_area_level_1'):
             cityState2 = i['short_name']
-    history["/timeMachine/"+str(lat)+'/'+str(lon)+'/'+str(int(timeMachineDate))]="/weather/"+str(lat)+'/'+str(lon)+'/'+str(int(timeMachineDate))
+    #history["/timeMachine/"+str(lat)+'/'+str(lon)+'/'+str(int(timeMachineDate))]="/weather/"+str(lat)+'/'+str(lon)+'/'+str(int(timeMachineDate))
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(lat)+','+str(lon)+','+str(int(timeMachineDate))+"?exclude=currently")
     jsonResponse = weatherrequest.json()
 
@@ -114,11 +139,11 @@ def getW(place):
         latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+place+"&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
         latlonReq=latlonReq.json()
     
-        cityName=latlonReq["results"][0]["address_components"][0]["long_name"]
+        cityName=latlonReq["results"][0]["address_components"][1]["long_name"]
         newLat=latlonReq["results"][0]["geometry"]["location"]["lat"]
         newLon=latlonReq["results"][0]["geometry"]["location"]["lng"]
     
-        history["/weather/"+place]="/weather/"+place
+        #history["/weather/"+place]="/weather/"+place
     
         weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(newLat)+','+str(newLon))
         jsonResponse = weatherrequest.json()
@@ -126,6 +151,12 @@ def getW(place):
         for i in latlonReq['results'][0]['address_components']:
             if i['types'][0] == 'administrative_area_level_3':
                 cityName = i['long_name']
+            if i['types'][0] == 'administrative_area_level_2':
+                cityName=i['long_name']
+            if(i['types'][0]=='locality'):
+                cityName=i['long_name']
+            if(i['types'][0]=='neighborhood'):
+                cityName=i['long_name']
             if(i['types'][0] == 'administrative_area_level_1'):
                 cityState2 = i['short_name']
         return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=cityState2, timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], latitude=newLat,longitude=newLon)
@@ -134,11 +165,11 @@ def getW(place):
     latlonReq = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address="+place+"&key=AIzaSyDsH4bT2HDycUdnA4OK3nHmU0Ws0AMmUYc")
     latlonReq=latlonReq.json()
     
-    cityName=latlonReq["results"][0]["address_components"][0]["long_name"]
+    #cityName=latlonReq["results"][0]["address_components"][0]["long_name"]
     newLat=latlonReq["results"][0]["geometry"]["location"]["lat"]
     newLon=latlonReq["results"][0]["geometry"]["location"]["lng"]
     
-    history["/weather/"+place]="/weather/"+place
+    #history["/weather/"+place]="/weather/"+place
     
     weatherrequest = requests.get('https://api.darksky.net/forecast/5ee32b066d83a0065aa181a4506a1da4/'+str(newLat)+','+str(newLon))
     jsonResponse = weatherrequest.json()
@@ -146,6 +177,12 @@ def getW(place):
     for i in latlonReq['results'][0]['address_components']:
         if i['types'][0] == 'administrative_area_level_3':
             cityName = i['long_name']
+        if i['types'][0] == 'administrative_area_level_2':
+            cityName=i['long_name']
+        if(i['types'][0]=='locality'):
+            cityName=i['long_name']
+        if(i['types'][0]=='neighborhood'):
+            cityName=i['long_name']
         if(i['types'][0] == 'administrative_area_level_1'):
             cityState2 = i['short_name']
 
@@ -153,12 +190,12 @@ def getW(place):
     return render_template('weather.html', data=jsonResponse["currently"], city=cityName, hourly=jsonResponse["hourly"], hourlyarr=jsonResponse["hourly"]["data"], mintuely=jsonResponse["minutely"]["summary"], cityState=cityState2, timezone=jsonResponse["timezone"], daily=jsonResponse["daily"], offset=jsonResponse["offset"], latitude=newLat,longitude=newLon)
 
 
-@app.route('/history', methods=['POST','GET'])
-def get_history():
-    l=[]
-    for key in history:
-        l.append(key)
-    return render_template('home.html',data=l)
+# @app.route('/history', methods=['POST','GET'])
+# def get_history():
+#     l=[]
+#     for key in history:
+#         l.append(key)
+#     return render_template('home.html',data=l)
 if __name__ == '__main__':
 	app.run(debug=True)
 
